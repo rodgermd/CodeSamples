@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+  <services>
+    <service id="arvo.registration.form.type" class="Arvo\UserBundle\Form\Type\RegistrationFormType">
+      <tag name="form.type" alias="arvo_user_registration" />
+      <argument>%fos_user.model.user.class%</argument>
+    </service>
+
+    <service id="arvo.profile.form.type" class="Arvo\UserBundle\Form\Type\ProfileFormType">
+      <tag name="form.type" alias="arvo_user_profile" />
+      <argument>%fos_user.model.user.class%</argument>
+    </service>
+
+    <service id="arvo_user_profile.form_handler" class="Arvo\UserBundle\Form\Handler\ProfileFormHandler" scope="request" public="false">
+      <argument type="service" id="fos_user.profile.form" />
+      <argument type="service" id="request" />
+      <argument type="service" id="fos_user.user_manager" />
+    </service>
+
+    <service id="fos_user.validator.password_changed" class="Arvo\UserBundle\Validator\PasswordChangedValidator">
+      <call method="setEncoderFactory">
+        <argument type="service" id="security.encoder_factory" />
+      </call>
+      <call method="setUserManager">
+        <argument type="service" id="arvo.user_manager" />
+      </call>
+      <tag name="validator.constraint_validator" alias="fos_user.validator.password_changed" />
+    </service>
+
+    <service id="security.authentication.provider.dao" class="Arvo\UserBundle\Security\Authentication\AuthenticationProvider" abstract="true" public="false">
+      <argument /> <!-- User Provider -->
+      <argument type="service" id="security.user_checker" />
+      <argument /> <!-- Provider-shared Key -->
+      <argument type="service" id="security.encoder_factory" />
+      <argument type="service" id="session"/>
+      <argument>%security.authentication.hide_user_not_found%</argument>
+    </service>
+
+  </services>
+</container>
